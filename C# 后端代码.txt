@@ -1,0 +1,224 @@
+using System;
+using System.Text;
+using System.Security.Cryptography;
+using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace Mvc_vue.Controllers
+{
+    public class wxController : Controller
+    {
+        //所需值
+        public static string _appid = "wxd930ea5d5a258f4f";
+        public static string _mch_id = "10000100";
+        public static string _key = "192006250b4c09247ec02edce69f6a2d";
+
+        //模拟wx统一下单 openid(前台获取)
+        public string getda(string openid)
+        {
+            return Getprepay_id(_appid, "shanghaifendian", "monixiaofei", _mch_id, GetRandomString(30),
+                "https://服务端域名/wxpay/pay", openid, getRandomTime(), 1);
+        }
+
+        /// <summary>
+        /// 微信统一下单获取prepay_id & 再次签名返回数据
+        /// </summary>
+        /// <param name="appid">小程序ID</param>
+        /// <param name="attach">附加数据(描述)</param>
+        /// <param name="body">商品描述</param>
+        /// <param name="mch_id">商户号</param>
+        /// <param name="nonce_str">随机字符串，不长于32位</param>
+        /// <param name="notify_url">通知地址</param>
+        /// <param name="openid">openid</param>
+        /// <param name="bookingNo">商户订单号</param>
+        /// <param name="total_fee">支付金额单位为（分）</param>
+        /// <returns></returns>
+        private static string Getprepay_id(string appid, string attach, string body, string mch_id,
+             string nonce_str, string notify_url, string openid, string bookingNo, int total_fee)
+        {
+            var url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//微信统一下单请求地址
+            string strA = "appid=" + appid + "&attach=" + attach + "&body=" + body + "&mch_id=" + mch_id
+                          + "&nonce_str=" + nonce_str + "&notify_url=" + notify_url + "&openid=" + openid
+                          + "&out_trade_no=" + bookingNo + "&spbill_create_ip=61.50.221.43&total_fee=" + total_fee
+                          + "&trade_type=JSAPI";
+            string strk = strA + "&key=" + _key; //key为商户平台设置的密钥key(假)
+            string strMd5 = MD5(strk).ToUpper(); //MD5签名
+
+            //string strHash=HmacSHA256("sha256",strmd5).ToUpper();   //签名方式只需一种(MD5 或 HmacSHA256     【支付文档需仔细看】)
+
+            //签名
+            var formData = "<xml>";
+            formData += "<appid>" + appid + "</appid>";
+            formData += "<attach>" + attach + "</attach>";
+            formData += "<body>" + body + "</body>";
+            formData += "<mch_id>" + mch_id + "</mch_id>";
+            formData += "<nonce_str>" + nonce_str + "</nonce_str>";
+            formData += "<notify_url>" + notify_url + "</notify_url>";
+            formData += "<openid>" + openid + "</openid>";
+            formData += "<out_trade_no>" + bookingNo + "</out_trade_no>";
+            formData += "<spbill_create_ip>61.50.221.43</spbill_create_ip>";//终端IP  --用户ip
+            formData += "<total_fee>" + total_fee + "</total_fee>";
+            formData += "<trade_type>JSAPI</trade_type>";//交易类型(JSAPI--公众号支付)
+            formData += "<sign>" + strMd5 + "</sign>"; //签名
+            formData += "</xml>";
+
+            //请求数据
+            var getdata = sendPost(url, formData);
+
+            //获取xml数据
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(getdata);
+
+            //xml格式转json
+            string json = JsonConvert.SerializeXmlNode(doc);
+
+            JObject jo = (JObject)JsonConvert.DeserializeObject(json);
+            string prepay_id = jo["xml"]["prepay_id"]["#cdata-section"].ToString();
+
+            //时间戳
+            string time = getTime().ToString();
+
+            //再次签名返回数据至小程序
+            string strB = "appId=" + appid + "&nonceStr=" + nonce_str + "&package=prepay_id=" + prepay_id
+                          + "&signType=MD5&timeStamp=" + time + "&key=" + _key;
+
+            WX w = new WX
+            {
+                TimeStamp = time,
+                NonceStr = nonce_str,
+                Package = "prepay_id=" + prepay_id,
+                PaySign = MD5(strB).ToUpper(),
+                SignType = "MD5"
+            };
+
+            //向小程序返回json数据
+            return JsonConvert.SerializeObject(w);
+        }
+
+        /// <summary>
+        /// 生成随机串    
+        /// </summary>
+        /// <param name="length">字符串长度</param>
+        /// <returns></returns>
+        private static string GetRandomString(int length)
+        {
+            const string key = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            if (length < 1)
+                return string.Empty;
+
+            Random rnd = new Random();
+            byte[] buffer = new byte[8];
+
+            ulong bit = 31;
+            ulong result = 0;
+            int index = 0;
+            StringBuilder sb = new StringBuilder((length / 5 + 1) * 5);
+
+            while (sb.Length < length)
+            {
+                rnd.NextBytes(buffer);
+
+                buffer[5] = buffer[6] = buffer[7] = 0x00;
+                result = BitConverter.ToUInt64(buffer, 0);
+
+                while (result > 0 && sb.Length < length)
+                {
+                    index = (int)(bit & result);
+                    sb.Append(key[index]);
+                    result = result >> 5;
+                }
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 获取时间戳
+        /// </summary>
+        /// <returns></returns>
+        private static long getTime()
+        {
+            TimeSpan cha = (DateTime.Now - TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1)));
+            long t = (long)cha.TotalSeconds;
+            return t;
+        }
+
+        /// <summary>
+        /// MD5签名方法  
+        /// </summary>  
+        /// <param name="inputText">加密参数</param>  
+        /// <returns></returns>  
+        private static string MD5(string inputText)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] fromData = System.Text.Encoding.UTF8.GetBytes(inputText);
+            byte[] targetData = md5.ComputeHash(fromData);
+            string byte2String = null;
+
+            for (int i = 0; i < targetData.Length; i++)
+            {
+                byte2String += targetData[i].ToString("x2");
+            }
+
+            return byte2String;
+        }
+
+        /// <summary>
+        /// HMAC-SHA256签名方式
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        private static string HmacSHA256(string message, string secret)
+        {
+            secret = secret ?? "";
+            var encoding = new UTF8Encoding();
+            byte[] keyByte = encoding.GetBytes(secret);
+            byte[] messageBytes = encoding.GetBytes(message);
+            using (var hmacsha256 = new HMACSHA256(keyByte))
+            {
+                byte[] hashmessage = hmacsha256.ComputeHash(messageBytes);
+                return Convert.ToBase64String(hashmessage);
+            }
+        }
+
+        /// <summary>
+        /// wx统一下单请求数据
+        /// </summary>
+        /// <param name="URL">请求地址</param>
+        /// <param name="urlArgs">参数</param>
+        /// <returns></returns>
+        private static string sendPost(string URL, string urlArgs)
+        {
+            System.Net.WebClient wCient = new System.Net.WebClient();
+            wCient.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+            //byte[] postData = System.Text.Encoding.ASCII.GetBytes(urlArgs);  如果微信签名中有中文会签名失败
+            byte[] postData = Encoding.UTF8.GetBytes(urlArgs);
+            byte[] responseData = wCient.UploadData(URL, "POST", postData);
+
+            string returnStr = Encoding.UTF8.GetString(responseData);//返回接受的数据 
+            return returnStr;
+        }
+
+        /// <summary>
+        /// 生成订单号
+        /// </summary>
+        /// <returns></returns>
+        private static string getRandomTime()
+        {
+            Random rd = new Random();//用于生成随机数
+            string dateStr = DateTime.Now.ToString("yyyyMMddHHmmssMM");//日期
+            string str = dateStr + rd.Next(10000).ToString().PadLeft(4, '0');//带日期的随机数
+            return str;
+        }
+    }
+
+    public class WX
+    {
+        public string TimeStamp { get; set; }
+        public string NonceStr { get; set; }
+        public string Package { get; set; }
+        public string PaySign { get; set; }
+        public string SignType { get; set; }
+    }
+}

@@ -4,6 +4,14 @@
   height:400rpx;
   display: block;
 }
+
+.getUserInfo{
+  position: absolute;
+  left: 30%;
+  top:10%;
+  width: 160px;
+}
+
 .userinfo {
   display: flex;
   flex-direction: column;

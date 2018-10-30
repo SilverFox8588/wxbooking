@@ -1,17 +1,23 @@
 //app.js
 App({
   onLaunch: function () {
-    // 展示本地存储能力
-    var logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
-
     // 登录
     wx.login({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        // 获取openid
+        wx.request({
+          url: 'https://api.weixin.qq.com/sns/jscode2session?appid=wx6c720a41c7cc7142&secret=ee0245e597fafe72f8efa591b1f1f554&js_code=' + res.code,
+          header: { "Content-Type": "application/x-www-form-urlencoded" },
+          method: "post",
+          success: function (res) {
+            wx.setStorageSync('openid', res.data.openid);
+            wx.setStorageSync('session_key', res.data.session_key);
+          }
+        });
       }
-    })
+    });
+
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -31,7 +37,7 @@ App({
           })
         }
       }
-    })
+    });
   },
   globalData: {
     userInfo: null

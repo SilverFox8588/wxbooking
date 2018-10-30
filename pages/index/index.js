@@ -6,9 +6,9 @@ Page({
   data: {
     //轮播图
     imgUrls: [
-      '../../images/1.png',
-      '../../images/3.png',
-      '../../images/4.png'
+      '../../images/11.jpg',
+      '../../images/22.jpg',
+      '../../images/33.jpg'
     ],
     indicatorDots: true,
     autoplay: true,
@@ -18,9 +18,9 @@ Page({
   onLoad: function () {
     
   },
-  golist: function () {
+  golist: function (e) {
     wx.navigateTo({
-      url: '../list/list'
+      url: '../list/list?index=' + e.currentTarget.id
     })
   },
 })

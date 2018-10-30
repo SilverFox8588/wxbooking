@@ -1,4 +1,6 @@
 // pages/mine/mine.js
+const app = getApp();
+
 Page({
 
   /**
@@ -6,30 +8,37 @@ Page({
    */
   data: {
     nickName:"",
-    avatarUrl:""
+    avatarUrl:"",
+    userInfo: {}
+  },
+
+  onLoad: function () {
+    if (app.globalData.userInfo) {
+      this.setData({
+        userInfo: app.globalData.userInfo
+      })
+    }
+  },
+
+  getUserInfo: function (e) {
+    app.globalData.userInfo = e.detail.userInfo;
+    
+    this.setData({
+      userInfo: e.detail.userInfo
+    })
   },
 
   /**
-   * 生命周期函数--监听页面加载
+   * 生命周期函数--监听页面显示
    */
-  onLoad: function (options) {
-    var that=this;
-    wx.getUserInfo({
-      success: function (res) {
-        var userInfo = res.userInfo
-        that.setData({
-          nickName: userInfo.nickName,
-          avatarUrl: userInfo.avatarUrl,
-        })
-      }
-    })
+  onShow: function (options) {
+   
   },
+  
   bitphone:function(){
     wx.makePhoneCall({
-      phoneNumber: '1340000' 
+      phoneNumber: '13679128518' 
     })
   }
- 
-
- 
+  
 })

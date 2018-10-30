@@ -4,14 +4,14 @@
     "pages/logs/logs",
     "pages/list/list",
     "pages/order/balance/balance",
-    "pages/mine/mine",
     "pages/order/list/list",
-    "pages/order/detail/detail"
+    "pages/order/detail/detail",
+    "pages/mine/mine"
   ],
   "window":{
     "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#FF9C35",
-    "navigationBarTitleText": "CoCo都可",
+    "navigationBarBackgroundColor": "#000",
+    "navigationBarTitleText": "KFC 在线订餐",
     "navigationBarTextStyle":"white"
   },
     "tabBar": {

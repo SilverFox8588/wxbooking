@@ -8,7 +8,7 @@
 .start-btn{
   width:100px;
   height:30px;
-  background:#F14C66;
+  background:red;
   font-size:14px;
   color:white;
 }
@@ -22,8 +22,6 @@
   color:grey;
 }
 .tab-box{
-  width:50%;
-  display:flex;
   font-size:14px;
   color:white
 }

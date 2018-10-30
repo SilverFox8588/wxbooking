@@ -16,9 +16,7 @@ Page({
     sizeIndex: 0,
     sugarIndex: 0,
     temIndex: 0,
-    sugar: ['常规糖', '无糖', '微糖', '半糖', '多糖'],
-    tem: ['常规冰', '多冰', '少冰', '去冰', '温', '热'],
-    size: ['常规', '珍珠', '西米露'],
+    size: ['常规', '测试1', '测试2', '测试3'],
     cartList: [],
     sumMonney: 0,
     cupNumber:0,
@@ -33,26 +31,35 @@ Page({
     var that = this;
     var sysinfo = wx.getSystemInfoSync().windowHeight;
     console.log(sysinfo)
-    wx.showLoading({
-      title: '努力加载中',
-    })
-    //将本来的后台换成了easy-mock 的接口，所有数据一次请求完 略大。。
-    wx.request({
-      url: 'https://easy-mock.com/mock/59abab95e0dc66334199cc5f/coco/aa',
-      method: 'GET',
-      data: {},
-      header: {
-        'Accept': 'application/json'
-      },
-      success: function (res) {
-        wx.hideLoading();
-        console.log(res)
-        that.setData({
-          listData: res.data,
-          loading: true
-        })
-      }
-    })
+    // wx.showLoading({
+    //   title: '努力加载中',
+    // })
+    var listData = [{ name: '人气热卖', foods: [{ image_url: '../../images/hb01.png', name: '9.9元香辣鸡腿堡', price: 9.9 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }] }, { name: '超值套餐', foods: [{ image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }] }, { name: '下午茶', foods: [{ image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }] }, { name: '汉堡/卷', foods: [{ image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }] }, { name: '允指原味鸡', foods: [{ image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }, { image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }] }, { name: '小食/配餐', foods: [{ image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }, { image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }] }, { name: '超值全家桶', foods: [{ image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }, { image_url: '../../images/all01.png', name: '58元双堡套餐', price: 58.0 }, { image_url: '../../images/ch01.png', name: '19.9元黄金鸡块20块', price: 19.9 }, { price: 0 }, { price: 0 }, { price: 0}] }];
+    
+    that.setData({
+      activeIndex: options.index,
+      toView: 'a' + options.index,
+      listData: listData,//res.data,
+      loading: true
+    });
+
+    //可以在这里请求api数据
+    // wx.request({
+    //   url: 'https://yourwebapi/list',
+    //   method: 'GET',
+    //   data: {},
+    //   header: {
+    //     'Accept': 'application/json'
+    //   },
+    //   success: function (res) {
+    //     wx.hideLoading();
+    //     console.log(res)
+    //     that.setData({
+    //       listData: listData,//res.data,
+    //       loading: true
+    //     })
+    //   }
+    // })
   },
   selectMenu: function (e) {
     var index = e.currentTarget.dataset.index
@@ -60,62 +67,49 @@ Page({
     this.setData({
       activeIndex: index,
       toView: 'a' + index,
-      // scrollTop: 1186
     })
     console.log(this.data.toView);
   },
   scroll: function (e) {
     console.log(e)
     var dis = e.detail.scrollTop
-    if (dis > 0 && dis < 1189) {
+    if (dis > 0 && dis < 182) {
       this.setData({
         activeIndex: 0,
       })
     }
-    if (dis > 1189 && dis < 1867) {
+    if (dis >= 182 && dis < 364) {
       this.setData({
         activeIndex: 1,
       })
     }
-    if (dis > 1867 && dis < 2180) {
+    if (dis >= 364 && dis < 546) {
       this.setData({
         activeIndex: 2,
       })
     }
-    if (dis > 2180 && dis < 2785) {
+    if (dis >= 546 && dis < 728) {
       this.setData({
         activeIndex: 3,
       })
     }
-    if (dis > 2785 && dis < 2879) {
+    if (dis >= 728 && dis < 1072) {
       this.setData({
         activeIndex: 4,
       })
     }
-    if (dis > 2879 && dis < 4287) {
+    if (dis >= 1072 && dis < 1416) {
       this.setData({
         activeIndex: 5,
       })
     }
-    if (dis > 4287 && dis < 4454) {
+    if (dis >= 1416) {
       this.setData({
         activeIndex: 6,
       })
     }
-    if (dis > 4454 && dis < 4986) {
-      this.setData({
-        activeIndex: 7,
-      })
-    }
-    if (dis > 4986) {
-      this.setData({
-        activeIndex: 8,
-      })
-    }
   },
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
+
   selectInfo: function (e) {
     var type = e.currentTarget.dataset.type;
     var index = e.currentTarget.dataset.index;
@@ -153,12 +147,12 @@ Page({
     var a = this.data
     var addItem = {
       "name": a.listData[a.currentType].foods[a.currentIndex].name,
-      "price": a.listData[a.currentType].foods[a.currentIndex].specfoods[0].price,
-      "detail": a.size[a.sizeIndex] + "+" + a.sugar[a.sugarIndex] + "+" + a.tem[a.temIndex],
+      "price": a.listData[a.currentType].foods[a.currentIndex].price,
+      "detail": a.size[a.sizeIndex],
       "number": 1,
-      "sum": a.listData[a.currentType].foods[a.currentIndex].specfoods[0].price,
+      "sum": a.listData[a.currentType].foods[a.currentIndex].price,
     }
-    var sumMonney = a.sumMonney + a.listData[a.currentType].foods[a.currentIndex].specfoods[0].price;
+    var sumMonney = a.sumMonney + a.listData[a.currentType].foods[a.currentIndex].price;
     var cartList = this.data.cartList;
     cartList.push(addItem);
     this.setData({
@@ -169,6 +163,12 @@ Page({
     });
     console.log(this.data.cartList)
   },
+  cancelCart:function(){
+    this.setData({
+      showModalStatus: false
+    });
+  },
+
   showCartList: function () {
     console.log(this.data.showCart)
     if (this.data.cartList.length != 0) {
@@ -182,7 +182,8 @@ Page({
     this.setData({
       cartList: [],
       showCart: false,
-      sumMonney: 0
+      sumMonney: 0,
+      cupNumber: 0
     });
   },
   addNumber: function (e) {
@@ -207,6 +208,7 @@ Page({
     var sum = this.data.sumMonney - cartList[index].price;
     cartList[index].sum -= cartList[index].price;
     cartList[index].number == 1 ? cartList.splice(index, 1) : cartList[index].number--;
+    
     this.setData({
       cartList: cartList,
       sumMonney: sum,

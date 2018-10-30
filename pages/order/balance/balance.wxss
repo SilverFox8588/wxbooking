@@ -11,7 +11,7 @@ page{
   display: flex;
 }
 .gouwuche{
-  width:75%;
+  width:72%;
   background:#353535;
   height: 100%; 
   
@@ -44,7 +44,7 @@ page{
 .submit-btn{
   height:100%;
   background:#F7F7F7;
-  width:25%;
+  width:28%;
   display:flex;
 }
 .submit-btn-label{
@@ -53,17 +53,11 @@ page{
   margin:auto;
 }
 .activity-color{
-  color:#FF9C35;
-}
-.submit-btn{
-  height:100%;
-  background:#F7F7F7;
-  width:25%;
-  display:flex;
+  color:red;
 }
 
 .activity-color-bg{
-  background:#FF9C35;
+  background:red;
 }
 
 .cart-list-box{
@@ -118,7 +112,7 @@ page{
   border-bottom: 1px #E3E3E3 solid;
 }
 .order-cut-dec{
-  background:#F07474;
+  background:red;
   font-size:13px;
   color:white;
   padding:2px

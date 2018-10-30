@@ -1,11 +1,10 @@
 <view>
-<!-- 左侧菜单 -->
   <view class="list-left-menu">
     <view wx:for="{{listData}}" wx:key="unique" class="{{index==activeIndex?'list-left-menu-box-selected':'list-left-menu-box-unselect'}}" data-index="{{index}}" bindtap='selectMenu'>
       <view class="list-menu-name">{{item.name}}</view>
     </view>
   </view>
-  <!-- 右侧菜单 -->
+
   <scroll-view scroll-y="true" style='height:1200rpx;' bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
     <view class="content" id="a{{index}}" wx:for="{{listData}}" wx:key="unique">
       <view class='list-tab'>{{item.name}}</view>
@@ -15,8 +14,8 @@
         </view>
         <view class='issue-name'>
           <view>{{items.name}}</view>
-          <view style='margin-top:20rpx;color:#F05A86'>
-            ¥ {{items.specfoods[0].price}}.00
+          <view hidden='{{items.price<1}}' style='margin-top:20rpx;color:red'>
+            <view>¥ {{items.price}}</view>
             <i class="iconfont icon-jiahao2fill plus-icon" data-type="{{index}}" data-index="{{indexs}}" bindtap="selectInfo"></i>
           </view>
 
@@ -24,7 +23,7 @@
       </view>
     </view>
   </scroll-view>
-  <!-- 底部操作菜单 -->
+
   <view class="operate-bar" wx:if="{{loading}}">
     <view class='gouwuche'>
       <view style='padding:5px;display:flex'>
@@ -33,7 +32,7 @@
         </i>
 
         <view class='gouwuche-price' wx:if="{{sumMonney==0}}">购物车是空的</view>
-        <view class='gouwuche-price' style='color:white;font-size:18px' wx:if="{{sumMonney!=0}}">¥ {{sumMonney}}.00</view>
+        <view class='gouwuche-price' style='color:white;font-size:18px' wx:if="{{sumMonney!=0}}">¥ {{sumMonney}}</view>
       </view>
     </view>
     <view class="submit-btn {{sumMonney!=0?'activity-color-bg':'' }}" bindtap='goBalance'>
@@ -41,7 +40,7 @@
     </view>
   </view>
 </view>
-<!-- 选择弹窗 -->
+
 <view class="drawer_screen" bindtap="selectInfo" data-statu="close" wx:if="{{showModalStatus}}"></view>
 <view class="drawer_box_ad" wx:if="{{showModalStatus}}">
   <view class="drawer_content_ad">
@@ -50,20 +49,14 @@
     <view style='display:flex'>
       <view class="select-tab {{index==sizeIndex?'select-active':''}}" wx:for="{{size}}" wx:key="unique" data-type='0' data-index='{{index}}' bindtap='chooseSE'>{{item}}</view>
     </view>
-    <view class="select-line-nav">糖度</view>
-    <view style='display:flex'>
-      <view class="select-tab {{index==sugarIndex?'select-active':''}}" wx:for="{{sugar}}" wx:key="unique" bindtap='chooseSE' data-type='1' data-index='{{index}}'>{{item}}</view>
-    </view>
-    <view class="select-line-nav">温度</view>
-    <view style='display:flex'>
-      <view class="select-tab {{index==temIndex?'select-active':''}}" wx:for="{{tem}}" wx:key="unique" bindtap='chooseSE' data-type='2' data-index='{{index}}'>{{item}}</view>
-    </view>
-    <view class="select-price">¥{{listData[currentType].foods[currentIndex].specfoods[0].price}}.00
-      <button class="btn-putIn" bindtap='addToCart'>加入购物车</button>
+    <view class="select-price">
+      <view class='text-price'>¥{{listData[currentType].foods[currentIndex].price}}</view>
+      <view class="button-price"><button class="btn-putIn" bindtap='addToCart'>加入购物车</button></view>
+      <view><button class="btn-cancel" bindtap='cancelCart'>取消</button></view>
     </view>
   </view>
 </view>
-<!-- 购物车 -->
+
 <view class="drawer_screen" bindtap="showCartList" data-statu="close" wx:if="{{showCart}}"></view>
 <view class="cartlist-float" wx:if="{{showCart}}">
   <view style='background:#F0F0F0;height:30px'>
@@ -76,7 +69,6 @@
     </label>
   </view>
   <scroll-view scroll-y="true" class="{{cartList.length>5?'cart-scroll-list':''}}">
-
     <view class='cart-list-box' wx:for="{{cartList}}" wx:key="unique" style='border-bottom:1px #E3E3E3 solid'>
       <view class='list-info'>
         <view>{{item.name}}</view>
@@ -84,7 +76,7 @@
       </view>
       <view style='width:50%;padding:10px;'>
         <view style='float:right'>
-          <label class='activity-color'>¥ {{item.sum}}.00</label>
+          <label class='activity-color'>¥ {{item.sum}}</label>
           <i class="iconfont icon-jian icon-li-circle" data-index="{{index}}" bindtap="decNumber"></i>
           {{item.number}}
           <i class="iconfont icon-jiahao2fill activity-color font20" data-index="{{index}}" bindtap="addNumber"></i>
@@ -93,7 +85,7 @@
     </view>
   </scroll-view>
 </view>
-<!-- 优惠宣传条 -->
+
 <view class='cut-bar' wx:if="{{sumMonney==0&&loading}}">
   <label>满20立减3元(手机点餐专享)</label>
 </view>
